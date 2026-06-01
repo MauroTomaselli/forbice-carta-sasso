@@ -24,6 +24,7 @@
             <h1>Forbice Carta Sasso 3D</h1>
             <p>Scegli una modalità per iniziare a giocare alla meglio di 5!</p>
             <div class="button-group">
+                <input type="text" id="input-player-name" placeholder="Il tuo nome (opzionale)">
                 <button id="btn-create" class="btn primary">Crea Partita</button>
                 <div class="divider">oppure</div>
                 <input type="text" id="input-join-code" placeholder="Inserisci Codice (es. 1234)">
@@ -46,14 +47,14 @@
         <div id="screen-game" class="screen game-hud">
             <div class="scoreboard">
                 <div class="score-box">
-                    <span class="player-label">Tu</span>
+                    <span id="label-you" class="player-label">Tu</span>
                     <span id="score-you" class="score-value">0</span>
                 </div>
                 <div class="score-center">
                     <span>vs</span>
                 </div>
                 <div class="score-box">
-                    <span class="player-label">Avversario</span>
+                    <span id="label-opponent" class="player-label">Avversario</span>
                     <span id="score-opponent" class="score-value">0</span>
                 </div>
             </div>

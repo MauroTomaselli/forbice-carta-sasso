@@ -13,6 +13,9 @@ let myChoice = null;
 let oppChoice = null;
 let roundCount = 0;
 
+let myName = "";
+let oppName = "Avversario";
+
 // Elementi DOM
 const screenMain = document.getElementById('screen-main');
 const screenWaiting = document.getElementById('screen-waiting');
@@ -22,11 +25,15 @@ const screenResult = document.getElementById('screen-result');
 const btnCreate = document.getElementById('btn-create');
 const btnJoin = document.getElementById('btn-join');
 const inputJoinCode = document.getElementById('input-join-code');
+const inputPlayerName = document.getElementById('input-player-name');
 const displayRoomCode = document.getElementById('display-room-code');
 const mainError = document.getElementById('main-error');
 const gameStatus = document.getElementById('game-status');
 const scoreYou = document.getElementById('score-you');
 const scoreOpponent = document.getElementById('score-opponent');
+
+const labelYou = document.getElementById('label-you');
+const labelOpponent = document.getElementById('label-opponent');
 
 const finalResultTitle = document.getElementById('final-result-title');
 const finalResultText = document.getElementById('final-result-text');
@@ -43,6 +50,16 @@ function showError(msg) {
     mainError.classList.remove('hidden');
 }
 
+function initializeMyName(hostFlag) {
+    let inputName = inputPlayerName.value.trim();
+    if (inputName.length === 0) {
+        myName = hostFlag ? "Giocatore 1" : "Giocatore 2";
+    } else {
+        myName = inputName;
+    }
+    labelYou.textContent = myName;
+}
+
 // --- LOGICA PEERJS ---
 
 // Genera un ID corto casuale per semplificare l'inserimento
@@ -56,6 +73,8 @@ btnCreate.addEventListener('click', () => {
     btnCreate.disabled = true;
     btnCreate.textContent = "Connessione al server...";
     
+    initializeMyName(true);
+
     const roomId = "fcs-" + generateShortId(); 
     
     try {
@@ -106,6 +125,8 @@ btnJoin.addEventListener('click', () => {
         return;
     }
 
+    initializeMyName(false);
+
     console.log("Tentativo di unione con codice:", code);
     btnJoin.disabled = true;
     btnJoin.textContent = "Ricerca Host...";
@@ -153,6 +174,11 @@ function setupConnection() {
     showScreen(screenGame);
     startGame();
 
+    // Invio il mio nome all'avversario
+    setTimeout(() => {
+        sendNetworkData({ type: 'INFO', name: myName });
+    }, 500);
+
     conn.on('data', (data) => {
         handleNetworkData(data);
     });
@@ -171,7 +197,10 @@ function sendNetworkData(data) {
 
 // Gestione messaggi P2P
 function handleNetworkData(data) {
-    if (data.type === 'CHOICE') {
+    if (data.type === 'INFO') {
+        oppName = data.name || (isHost ? "Giocatore 2" : "Giocatore 1");
+        labelOpponent.textContent = oppName;
+    } else if (data.type === 'CHOICE') {
         oppChoice = data.choice;
         checkRoundResult();
     } else if (data.type === 'REMATCH') {
@@ -197,7 +226,7 @@ function startGame() {
 
 function onLocalChoiceMade(choice) {
     myChoice = choice;
-    gameStatus.textContent = `Hai scelto ${choice.toUpperCase()}. In attesa dell'avversario...`;
+    gameStatus.textContent = `Hai scelto ${choice.toUpperCase()}. In attesa di ${oppName}...`;
     
     // Aggiorna 3D
     if (typeof showWaitingOpponent === "function") {
@@ -218,10 +247,10 @@ function checkRoundResult() {
 
         if (result === 'win') {
             myScore++;
-            statusMsg = `Hai Vinto il round! (Tu: ${myChoice}, Avv: ${oppChoice})`;
+            statusMsg = `Hai Vinto il round! (Tu: ${myChoice}, ${oppName}: ${oppChoice})`;
         } else if (result === 'lose') {
             oppScore++;
-            statusMsg = `Hai Perso il round. (Tu: ${myChoice}, Avv: ${oppChoice})`;
+            statusMsg = `Hai Perso il round. (Tu: ${myChoice}, ${oppName}: ${oppChoice})`;
         } else {
             statusMsg = `Pareggio! (Entrambi: ${myChoice})`;
         }
@@ -265,11 +294,11 @@ function endGame() {
     showScreen(screenResult);
     if (myScore >= MAX_WINS) {
         finalResultTitle.textContent = "VITTORIA!";
-        finalResultText.textContent = `Hai vinto ${myScore} a ${oppScore}.`;
+        finalResultText.textContent = `Hai vinto ${myScore} a ${oppScore} contro ${oppName}.`;
         finalResultTitle.style.color = "var(--success)";
     } else {
         finalResultTitle.textContent = "SCONFITTA!";
-        finalResultText.textContent = `Hai perso ${myScore} a ${oppScore}.`;
+        finalResultText.textContent = `Hai perso ${myScore} a ${oppScore} contro ${oppName}.`;
         finalResultTitle.style.color = "var(--danger)";
     }
     
