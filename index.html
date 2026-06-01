@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forbice Carta Sasso 3D Multiplayer</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <!-- PeerJS for P2P networking -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- Three.js for 3D graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- Sfondo Three.js -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Overlay UI -->
+    <div id="ui-container" class="glass-panel">
+        
+        <!-- Schermata Iniziale -->
+        <div id="screen-main" class="screen active">
+            <h1>Forbice Carta Sasso 3D</h1>
+            <p>Scegli una modalità per iniziare a giocare alla meglio di 5!</p>
+            <div class="button-group">
+                <button id="btn-create" class="btn primary">Crea Partita</button>
+                <div class="divider">oppure</div>
+                <input type="text" id="input-join-code" placeholder="Inserisci Codice (es. 1234)">
+                <button id="btn-join" class="btn secondary">Unisciti</button>
+            </div>
+            <p id="main-error" class="error-text hidden"></p>
+        </div>
+
+        <!-- Schermata di Attesa (Host) -->
+        <div id="screen-waiting" class="screen">
+            <h2>Stanza Creata</h2>
+            <p>Comunica questo codice al tuo avversario:</p>
+            <div class="room-code-box">
+                <span id="display-room-code">----</span>
+            </div>
+            <p class="pulse-text">In attesa dell'avversario...</p>
+        </div>
+
+        <!-- Schermata di Gioco -->
+        <div id="screen-game" class="screen game-hud">
+            <div class="scoreboard">
+                <div class="score-box">
+                    <span class="player-label">Tu</span>
+                    <span id="score-you" class="score-value">0</span>
+                </div>
+                <div class="score-center">
+                    <span>vs</span>
+                </div>
+                <div class="score-box">
+                    <span class="player-label">Avversario</span>
+                    <span id="score-opponent" class="score-value">0</span>
+                </div>
+            </div>
+            
+            <div id="game-status" class="status-message">
+                In attesa di iniziare...
+            </div>
+
+            <!-- Opzioni manuali (opzionale se il 3D non è cliccabile per qualche motivo) 
+                 Normalmente useremo il raycasting, ma mettiamo i bottoni come fallback visivo o principale. -->
+            <div class="controls hidden" id="game-controls">
+                <button class="btn action-btn" data-choice="sasso">Sasso</button>
+                <button class="btn action-btn" data-choice="carta">Carta</button>
+                <button class="btn action-btn" data-choice="forbici">Forbici</button>
+            </div>
+        </div>
+
+        <!-- Schermata Risultato Finale -->
+        <div id="screen-result" class="screen">
+            <h2 id="final-result-title">Hai Vinto!</h2>
+            <p id="final-result-text">Complimenti, hai dominato l'avversario.</p>
+            <button id="btn-rematch" class="btn primary">Nuova Partita</button>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="scene.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
