@@ -39,6 +39,14 @@ const finalResultTitle = document.getElementById('final-result-title');
 const finalResultText = document.getElementById('final-result-text');
 const btnRematch = document.getElementById('btn-rematch');
 
+const statusDot = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
+
+function updateStatus(stateClass, text) {
+    statusDot.className = 'status-dot ' + stateClass;
+    statusText.textContent = text;
+}
+
 // Utility UI
 function showScreen(screenEl) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -72,6 +80,7 @@ btnCreate.addEventListener('click', () => {
     console.log("Creazione stanza iniziata...");
     btnCreate.disabled = true;
     btnCreate.textContent = "Connessione al server...";
+    updateStatus('connecting', 'Connessione al server...');
     
     initializeMyName(true);
 
@@ -93,6 +102,7 @@ btnCreate.addEventListener('click', () => {
 
     peer.on('open', (id) => {
         console.log("Connesso al PeerServer! ID assegnato:", id);
+        updateStatus('server', "In attesa dell'avversario");
         isHost = true;
         const code = id.replace("fcs-", "");
         displayRoomCode.textContent = code;
@@ -111,6 +121,7 @@ btnCreate.addEventListener('click', () => {
 
     peer.on('error', (err) => {
         console.error("PeerJS Error:", err);
+        updateStatus('', 'Errore di connessione');
         showError("Errore durante la creazione: " + err.type);
         btnCreate.disabled = false;
         btnCreate.textContent = "Crea Partita";
@@ -130,11 +141,13 @@ btnJoin.addEventListener('click', () => {
     console.log("Tentativo di unione con codice:", code);
     btnJoin.disabled = true;
     btnJoin.textContent = "Ricerca Host...";
+    updateStatus('connecting', 'Ricerca Host...');
 
     peer = new Peer({ debug: 2 }); // ID generato automaticamente per il guest
 
     peer.on('open', (id) => {
         console.log("Guest connesso al PeerServer. ID:", id);
+        updateStatus('connecting', "Connessione all'host...");
         isHost = false;
         // Tenta la connessione all'host
         const hostId = "fcs-" + code;
@@ -151,6 +164,7 @@ btnJoin.addEventListener('click', () => {
 
         conn.on('error', (err) => {
             console.error("Errore connessione DataChannel:", err);
+            updateStatus('', 'Disconnesso');
             showError("La connessione con l'host è caduta.");
             btnJoin.disabled = false;
             btnJoin.textContent = "Unisciti";
@@ -159,6 +173,7 @@ btnJoin.addEventListener('click', () => {
 
     peer.on('error', (err) => {
         console.error("PeerJS Error sul Guest:", err);
+        updateStatus('', 'Errore di connessione');
         if (err.type === 'peer-unavailable') {
             showError("Host non trovato. L'avversario ha chiuso la pagina o il codice è errato.");
         } else {
@@ -171,6 +186,7 @@ btnJoin.addEventListener('click', () => {
 
 // Configura la connessione una volta stabilita
 function setupConnection() {
+    updateStatus('connected', 'Connesso P2P');
     showScreen(screenGame);
     startGame();
 
@@ -184,6 +200,7 @@ function setupConnection() {
     });
 
     conn.on('close', () => {
+        updateStatus('', 'Disconnesso');
         alert("L'avversario si è disconnesso.");
         location.reload();
     });
