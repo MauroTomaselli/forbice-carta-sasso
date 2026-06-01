@@ -104,7 +104,7 @@ function startSelection(callback) {
         rockMesh.position.set(0, 3, 0);
         paperMesh.position.set(0, 0, 0);
         scissorsMesh.position.set(0, -3, 0);
-        camera.position.z = 12; // allontana un po' la camera per farli entrare tutti
+        camera.position.z = 16; // allontana maggiormente la telecamera per rimpicciolire i modelli su smartphone
     } else {
         rockMesh.position.set(-4, 0, 0);
         paperMesh.position.set(0, 0, 0);

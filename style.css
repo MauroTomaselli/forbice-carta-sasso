@@ -380,3 +380,37 @@ input:focus {
 .home-btn:active {
     transform: scale(0.95);
 }
+
+/* Ottimizzazioni per Smartphone */
+@media (max-width: 600px) {
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 1rem; }
+    
+    .glass-panel { 
+        padding: 1.5rem 1rem; 
+        width: 95%;
+    }
+    
+    .score-value { font-size: 1.8rem; }
+    .player-label { font-size: 0.75rem; }
+    .score-center { font-size: 1rem; }
+    
+    .status-message { 
+        font-size: 1rem; 
+        padding: 0.8rem 1rem; 
+        margin-top: 1rem; 
+    }
+    
+    .btn { padding: 0.8rem; font-size: 1rem; }
+    input { padding: 0.8rem; font-size: 1rem; }
+    
+    .room-code-box { padding: 1rem; margin-bottom: 1rem; }
+    #display-room-code { font-size: 2.2rem; letter-spacing: 5px; }
+    
+    .home-btn, .status-indicator {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+        bottom: 0.5rem;
+    }
+}
