@@ -350,3 +350,31 @@ input:focus {
     background-color: var(--success); 
     box-shadow: 0 0 5px var(--success); 
 }
+
+/* Home Button */
+.home-btn {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--panel-border);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.2s ease;
+}
+
+.home-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: var(--danger);
+    color: #ffcccc;
+}
+
+.home-btn:active {
+    transform: scale(0.95);
+}

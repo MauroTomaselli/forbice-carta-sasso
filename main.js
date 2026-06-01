@@ -41,6 +41,7 @@ const btnRematch = document.getElementById('btn-rematch');
 
 const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
+const btnHome = document.getElementById('btn-home');
 
 function updateStatus(stateClass, text) {
     statusDot.className = 'status-dot ' + stateClass;
@@ -51,6 +52,13 @@ function updateStatus(stateClass, text) {
 function showScreen(screenEl) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     screenEl.classList.add('active');
+    
+    // Mostra il tasto home ovunque tranne che nella schermata principale
+    if (screenEl === screenMain) {
+        btnHome.classList.add('hidden');
+    } else {
+        btnHome.classList.remove('hidden');
+    }
 }
 
 function showError(msg) {
@@ -201,8 +209,8 @@ function setupConnection() {
 
     conn.on('close', () => {
         updateStatus('', 'Disconnesso');
-        alert("L'avversario si è disconnesso.");
-        location.reload();
+        alert("L'avversario si è disconnesso o ha abbandonato la partita.");
+        returnToHome();
     });
 }
 
@@ -335,4 +343,36 @@ btnRematch.addEventListener('click', () => {
     sendNetworkData({ type: 'REMATCH' });
     resetGameStats();
     startGame();
+});
+
+// Funzione per tornare alla home forzatamente
+function returnToHome() {
+    // Chiudi le connessioni
+    if (conn) {
+        conn.close();
+        conn = null;
+    }
+    if (peer) {
+        peer.destroy();
+        peer = null;
+    }
+    
+    // Ripristina l'interfaccia e variabili
+    updateStatus('', 'Disconnesso');
+    resetGameStats();
+    if (typeof hideAllModels === "function") hideAllModels();
+    
+    // Svuota i campi di input
+    inputJoinCode.value = '';
+    displayRoomCode.textContent = '----';
+    mainError.classList.add('hidden');
+    
+    // Torna alla schermata principale
+    showScreen(screenMain);
+}
+
+btnHome.addEventListener('click', () => {
+    if (confirm("Vuoi davvero abbandonare la partita e tornare al menu principale?")) {
+        returnToHome();
+    }
 });
