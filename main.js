@@ -106,24 +106,45 @@ btnJoin.addEventListener('click', () => {
         return;
     }
 
-    peer = new Peer(); // ID generato automaticamente per il guest
+    console.log("Tentativo di unione con codice:", code);
+    btnJoin.disabled = true;
+    btnJoin.textContent = "Ricerca Host...";
+
+    peer = new Peer({ debug: 2 }); // ID generato automaticamente per il guest
 
     peer.on('open', (id) => {
+        console.log("Guest connesso al PeerServer. ID:", id);
         isHost = false;
         // Tenta la connessione all'host
-        conn = peer.connect("fcs-" + code);
+        const hostId = "fcs-" + code;
+        console.log("Connessione all'host:", hostId);
+        
+        conn = peer.connect(hostId, { reliable: true });
         
         conn.on('open', () => {
+            console.log("Connessione P2P stabilita con successo!");
             setupConnection();
+            btnJoin.disabled = false;
+            btnJoin.textContent = "Unisciti";
         });
 
         conn.on('error', (err) => {
-            showError("Errore di connessione: " + err);
+            console.error("Errore connessione DataChannel:", err);
+            showError("La connessione con l'host è caduta.");
+            btnJoin.disabled = false;
+            btnJoin.textContent = "Unisciti";
         });
     });
 
     peer.on('error', (err) => {
-        showError("Impossibile connettersi: " + err.type);
+        console.error("PeerJS Error sul Guest:", err);
+        if (err.type === 'peer-unavailable') {
+            showError("Host non trovato. L'avversario ha chiuso la pagina o il codice è errato.");
+        } else {
+            showError("Errore WebRTC: " + err.type);
+        }
+        btnJoin.disabled = false;
+        btnJoin.textContent = "Unisciti";
     });
 });
 
