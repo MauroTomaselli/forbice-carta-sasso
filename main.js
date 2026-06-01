@@ -220,15 +220,20 @@ function setupConnection() {
 
 function sendNetworkData(data) {
     if (conn && conn.open) {
+        data.senderName = myName; // Allega sempre il nome a ogni pacchetto
         conn.send(data);
     }
 }
 
 // Gestione messaggi P2P
 function handleNetworkData(data) {
-    if (data.type === 'INFO') {
-        oppName = data.name || (isHost ? "Giocatore 2" : "Giocatore 1");
+    if (data.senderName) {
+        oppName = data.senderName;
         labelOpponent.textContent = oppName;
+    }
+
+    if (data.type === 'INFO') {
+        // Il nome è già stato aggiornato sopra
     } else if (data.type === 'CHOICE') {
         oppChoice = data.choice;
         checkRoundResult();
@@ -276,12 +281,12 @@ function checkRoundResult() {
 
         if (result === 'win') {
             myScore++;
-            statusMsg = `Hai Vinto il round! (Tu: ${myChoice}, ${oppName}: ${oppChoice})`;
+            statusMsg = `Vinto! (${myChoice} vs ${oppChoice})`;
         } else if (result === 'lose') {
             oppScore++;
-            statusMsg = `Hai Perso il round. (Tu: ${myChoice}, ${oppName}: ${oppChoice})`;
+            statusMsg = `Perso! (${myChoice} vs ${oppChoice})`;
         } else {
-            statusMsg = `Pareggio! (Entrambi: ${myChoice})`;
+            statusMsg = `Pareggio!`;
         }
 
         updateScoreUI();
@@ -322,14 +327,15 @@ function updateScoreUI() {
 function endGame() {
     showScreen(screenResult);
     if (myScore >= MAX_WINS) {
-        finalResultTitle.textContent = "VITTORIA!";
-        finalResultText.textContent = `Hai vinto ${myScore} a ${oppScore} contro ${oppName}.`;
+        finalResultTitle.textContent = "VITTORIA";
         finalResultTitle.style.color = "var(--success)";
     } else {
-        finalResultTitle.textContent = "SCONFITTA!";
-        finalResultText.textContent = `Hai perso ${myScore} a ${oppScore} contro ${oppName}.`;
+        finalResultTitle.textContent = "SCONFITTA";
         finalResultTitle.style.color = "var(--danger)";
     }
+    
+    // Nascondiamo il testo dettagliato e teniamo solo il titolo
+    finalResultText.classList.add('hidden');
     
     // Rimuovi modelli 3D
     if (typeof hideAllModels === "function") hideAllModels();

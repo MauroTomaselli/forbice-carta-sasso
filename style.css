@@ -255,14 +255,14 @@ input:focus {
 }
 
 .status-message {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 500;
-    background: var(--panel-bg);
+    background: rgba(30, 41, 59, 0.9);
     backdrop-filter: blur(8px);
-    padding: 1rem 2rem;
-    border-radius: 20px;
-    border: 1px solid var(--panel-border);
-    margin-top: 2rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 1rem;
 }
 
 /* Se mostriamo pulsanti anziché 3D cliccabile */
@@ -398,7 +398,8 @@ input:focus {
     
     .status-message { 
         font-size: 1rem; 
-        padding: 0.8rem 1rem; 
+        padding: 0.4rem 0.8rem; 
+        border-radius: 8px;
         margin-top: 1rem; 
     }
     
