@@ -98,18 +98,28 @@ function startSelection(callback) {
     if(myActiveMesh) scene.remove(myActiveMesh);
     if(oppActiveMesh) scene.remove(oppActiveMesh);
 
-    // Ripristina posizioni per la selezione
-    rockMesh.position.set(-4, 0, 0);
+    const isPortrait = window.innerHeight > window.innerWidth;
+
+    if (isPortrait) {
+        rockMesh.position.set(0, 3, 0);
+        paperMesh.position.set(0, 0, 0);
+        scissorsMesh.position.set(0, -3, 0);
+        camera.position.z = 12; // allontana un po' la camera per farli entrare tutti
+    } else {
+        rockMesh.position.set(-4, 0, 0);
+        paperMesh.position.set(0, 0, 0);
+        scissorsMesh.position.set(4, 0, 0);
+        camera.position.z = 10;
+    }
+
     rockMesh.rotation.set(0,0,0);
     rockMesh.scale.set(1,1,1);
     scene.add(rockMesh);
 
-    paperMesh.position.set(0, 0, 0);
     paperMesh.rotation.set(0,0,0);
     paperMesh.scale.set(1,1,1);
     scene.add(paperMesh);
 
-    scissorsMesh.position.set(4, 0, 0);
     scissorsMesh.rotation.set(0,0,0);
     scissorsMesh.scale.set(1,1,1);
     scene.add(scissorsMesh);
@@ -133,31 +143,44 @@ function showClash(myChoice, oppChoice, result) {
     hideAllModels();
     if(myActiveMesh) scene.remove(myActiveMesh);
     
+    const isPortrait = window.innerHeight > window.innerWidth;
+
     myActiveMesh = cloneChoiceMesh(myChoice);
-    myActiveMesh.position.set(-3, 0, 0);
     scene.add(myActiveMesh);
 
     oppActiveMesh = cloneChoiceMesh(oppChoice);
-    oppActiveMesh.position.set(3, 0, 0);
-    // ruotiamo l'avversario per affrontarci
-    oppActiveMesh.rotation.y = Math.PI; 
     scene.add(oppActiveMesh);
+
+    if (isPortrait) {
+        myActiveMesh.position.set(0, -3.5, 0);
+        oppActiveMesh.position.set(0, 3.5, 0);
+        oppActiveMesh.rotation.z = Math.PI; // ruotiamo verso il basso
+    } else {
+        myActiveMesh.position.set(-3, 0, 0);
+        oppActiveMesh.position.set(3, 0, 0);
+        oppActiveMesh.rotation.y = Math.PI; // ruotiamo per affrontarci
+    }
 
     // Semplice animazione di scontro
     let t = 0;
     const clashAnim = () => {
         t += 0.05;
         if (t <= 1) {
-            myActiveMesh.position.x = -3 + 2 * t; // si sposta verso il centro
-            oppActiveMesh.position.x = 3 - 2 * t;
+            if (isPortrait) {
+                myActiveMesh.position.y = -3.5 + 2.5 * t; 
+                oppActiveMesh.position.y = 3.5 - 2.5 * t;
+            } else {
+                myActiveMesh.position.x = -3 + 2 * t; 
+                oppActiveMesh.position.x = 3 - 2 * t;
+            }
             requestAnimationFrame(clashAnim);
         } else {
             // Effetto post scontro
             if (result === 'win') {
-                oppActiveMesh.position.y -= 1;
+                if (isPortrait) oppActiveMesh.position.x -= 1; else oppActiveMesh.position.y -= 1;
                 oppActiveMesh.rotation.z += 1;
             } else if (result === 'lose') {
-                myActiveMesh.position.y -= 1;
+                if (isPortrait) myActiveMesh.position.x -= 1; else myActiveMesh.position.y -= 1;
                 myActiveMesh.rotation.z -= 1;
             }
             // draw: non fa nulla, rimbalzano

@@ -196,13 +196,8 @@ btnJoin.addEventListener('click', () => {
 function setupConnection() {
     updateStatus('connected', 'Connesso P2P');
     showScreen(screenGame);
-    startGame();
 
-    // Invio il mio nome all'avversario
-    setTimeout(() => {
-        sendNetworkData({ type: 'INFO', name: myName });
-    }, 500);
-
+    // Registra ascoltatori PRIMA di mandare dati
     conn.on('data', (data) => {
         handleNetworkData(data);
     });
@@ -212,6 +207,15 @@ function setupConnection() {
         alert("L'avversario si è disconnesso o ha abbandonato la partita.");
         returnToHome();
     });
+
+    // Invia subito il proprio nome all'avversario
+    if (conn.open) {
+        sendNetworkData({ type: 'INFO', name: myName });
+    } else {
+        conn.on('open', () => sendNetworkData({ type: 'INFO', name: myName }));
+    }
+
+    startGame();
 }
 
 function sendNetworkData(data) {

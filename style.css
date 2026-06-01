@@ -312,8 +312,9 @@ input:focus {
 /* Status Indicator */
 .status-indicator {
     position: absolute;
-    top: 1rem;
+    bottom: 1rem;
     right: 1rem;
+    top: auto;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -354,8 +355,9 @@ input:focus {
 /* Home Button */
 .home-btn {
     position: absolute;
-    top: 1rem;
+    bottom: 1rem;
     left: 1rem;
+    top: auto;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     border: 1px solid var(--panel-border);
